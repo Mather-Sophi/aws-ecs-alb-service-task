@@ -66,10 +66,10 @@ variable "container_port" {
   default     = 80
 }
 
-variable "subnet_ids" {
-  description = "Subnet IDs"
-  type        = "list"
-}
+# variable "subnet_ids" {
+#   description = "Subnet IDs"
+#   type        = "list"
+# }
 
 variable "security_group_ids" {
   description = "Security group IDs to allow in Service `network_configuration`"
@@ -124,11 +124,11 @@ variable "health_check_grace_period_seconds" {
   default     = 0
 }
 
-variable "volumes" {
-  type        = "list"
-  description = "Task volume definitions as list of maps"
-  default     = []
-}
+# variable "volumes" {
+#   type        = "list"
+#   description = "Task volume definitions as list of maps"
+#   default     = []
+# }
 
 variable "ignore_changes_task_definition" {
   type        = "string"

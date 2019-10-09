@@ -9,33 +9,33 @@ module "default_label" {
 }
 
 module "task_label" {
-  source     = "git::https://github.com/cloudposse/terraform-terraform-label.git?ref=0.2.1"
-  attributes = ["${compact(concat(var.attributes, list("task")))}"]
-  delimiter  = "${var.delimiter}"
-  name       = "${var.name}"
-  namespace  = "${var.namespace}"
-  stage      = "${var.stage}"
-  tags       = "${var.tags}"
+  source = "git::https://github.com/cloudposse/terraform-terraform-label.git?ref=0.2.1"
+  # attributes = ["${compact(concat(var.attributes, list("task")))}"]
+  delimiter = "${var.delimiter}"
+  name      = "${var.name}"
+  namespace = "${var.namespace}"
+  stage     = "${var.stage}"
+  tags      = "${var.tags}"
 }
 
 module "service_label" {
-  source     = "git::https://github.com/cloudposse/terraform-terraform-label.git?ref=0.2.1"
-  attributes = ["${compact(concat(var.attributes, list("service")))}"]
-  delimiter  = "${var.delimiter}"
-  name       = "${var.name}"
-  namespace  = "${var.namespace}"
-  stage      = "${var.stage}"
-  tags       = "${var.tags}"
+  source = "git::https://github.com/cloudposse/terraform-terraform-label.git?ref=0.2.1"
+  # attributes = ["${compact(concat(var.attributes, list("service")))}"]
+  delimiter = "${var.delimiter}"
+  name      = "${var.name}"
+  namespace = "${var.namespace}"
+  stage     = "${var.stage}"
+  tags      = "${var.tags}"
 }
 
 module "exec_label" {
-  source     = "git::https://github.com/cloudposse/terraform-terraform-label.git?ref=0.2.1"
-  attributes = ["${compact(concat(var.attributes, list("exec")))}"]
-  delimiter  = "${var.delimiter}"
-  name       = "${var.name}"
-  namespace  = "${var.namespace}"
-  stage      = "${var.stage}"
-  tags       = "${var.tags}"
+  source = "git::https://github.com/cloudposse/terraform-terraform-label.git?ref=0.2.1"
+  # attributes = ["${compact(concat(var.attributes, list("exec")))}"]
+  delimiter = "${var.delimiter}"
+  name      = "${var.name}"
+  namespace = "${var.namespace}"
+  stage     = "${var.stage}"
+  tags      = "${var.tags}"
 }
 
 resource "aws_ecs_task_definition" "default" {
@@ -48,7 +48,7 @@ resource "aws_ecs_task_definition" "default" {
   execution_role_arn       = "${aws_iam_role.ecs_exec.arn}"
   task_role_arn            = "${aws_iam_role.ecs_task.arn}"
   tags                     = "${module.default_label.tags}"
-  volume                   = "${var.volumes}"
+  # volume                   = "${var.volumes}"
 }
 
 # IAM
@@ -65,7 +65,7 @@ data "aws_iam_policy_document" "ecs_task" {
 }
 
 resource "aws_iam_role" "ecs_task" {
-  name               = "${module.task_label.id}"
+  name               = "${module.task_label.id}-task"
   assume_role_policy = "${data.aws_iam_policy_document.ecs_task.json}"
   tags               = "${module.task_label.tags}"
 }
@@ -83,7 +83,7 @@ data "aws_iam_policy_document" "ecs_service" {
 }
 
 resource "aws_iam_role" "ecs_service" {
-  name               = "${module.service_label.id}"
+  name               = "${module.service_label.id}-service"
   assume_role_policy = "${data.aws_iam_policy_document.ecs_service.json}"
   tags               = "${module.service_label.tags}"
 }
@@ -186,7 +186,7 @@ resource "aws_security_group_rule" "alb" {
 }
 
 resource "aws_ecs_service" "ignore_changes_task_definition" {
-  count                              = "${var.ignore_changes_task_definition == "true" ? 1: 0}"
+  count                              = "${var.ignore_changes_task_definition == "true" ? 1 : 0}"
   name                               = "${module.default_label.id}"
   task_definition                    = "${aws_ecs_task_definition.default.family}:${aws_ecs_task_definition.default.revision}"
   desired_count                      = "${var.desired_count}"
@@ -201,11 +201,11 @@ resource "aws_ecs_service" "ignore_changes_task_definition" {
     type = "${var.deployment_controller_type}"
   }
 
-  network_configuration {
-    security_groups  = ["${var.security_group_ids}", "${aws_security_group.ecs_service.id}"]
-    subnets          = ["${var.subnet_ids}"]
-    assign_public_ip = "${var.assign_public_ip}"
-  }
+  # network_configuration {
+  #   security_groups  = ["${var.security_group_ids}", "${aws_security_group.ecs_service.id}"]
+  #   subnets          = ["${var.subnet_ids}"]
+  #   assign_public_ip = "${var.assign_public_ip}"
+  # }
 
   load_balancer {
     target_group_arn = "${var.alb_target_group_arn}"
@@ -219,7 +219,7 @@ resource "aws_ecs_service" "ignore_changes_task_definition" {
 }
 
 resource "aws_ecs_service" "default" {
-  count                              = "${var.ignore_changes_task_definition == "false" ? 1: 0}"
+  count                              = "${var.ignore_changes_task_definition == "false" ? 1 : 0}"
   name                               = "${module.default_label.id}"
   task_definition                    = "${aws_ecs_task_definition.default.family}:${aws_ecs_task_definition.default.revision}"
   desired_count                      = "${var.desired_count}"
@@ -234,11 +234,11 @@ resource "aws_ecs_service" "default" {
     type = "${var.deployment_controller_type}"
   }
 
-  network_configuration {
-    security_groups  = ["${var.security_group_ids}", "${aws_security_group.ecs_service.id}"]
-    subnets          = ["${var.subnet_ids}"]
-    assign_public_ip = "${var.assign_public_ip}"
-  }
+  # network_configuration {
+  #   security_groups  = ["${var.security_group_ids}", "${aws_security_group.ecs_service.id}"]
+  #   subnets          = ["${var.subnet_ids}"]
+  #   assign_public_ip = "${var.assign_public_ip}"
+  # }
 
   load_balancer {
     target_group_arn = "${var.alb_target_group_arn}"
